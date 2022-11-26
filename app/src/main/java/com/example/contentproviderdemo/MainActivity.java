@@ -49,17 +49,25 @@ public class MainActivity extends AppCompatActivity {
                 null
         );
 
-        Log.i("CONTACT_PROVIDER_DEMO", "TOTAL # of Contacts : " + cursor.getCount());
-        if (cursor.getCount() > 0){
-            while (cursor.moveToNext()){
-                String contactName = cursor.getCount() > 0 ?cursor.getString(
-                        cursor.getColumnIndex(
-                                ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME
-                        )
-                ) : "empty";
+        int count = cursor.getCount();
+        Log.i("CONTACT_PROVIDER_DEMO", "TOTAL # of Contacts: " + count);
+        if (cursor.getCount() > 0) {
+            while (cursor.moveToNext()) {
+                String contactName = count > 0 ?
+                        cursor.getString(
+                                cursor.getColumnIndex(
+                                        ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME
+                                )
+                        ) : "empty";
+                String contactNumber = count > 0 ?
+                        cursor.getString(
+                                cursor.getColumnIndex(
+                                        ContactsContract.CommonDataKinds.Phone.NUMBER
+                                )
+                        ) : "empty";
+
+                Log.i("CONTACT_PROVIDER_DEMO", "Contact Name: " + contactName + ", Phone: " + contactNumber);
             }
         }
-
     }
-
 }
