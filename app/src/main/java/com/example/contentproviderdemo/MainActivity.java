@@ -11,7 +11,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import com.example.contentproviderdemo.databinding.ActivityMainBinding;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -23,12 +28,14 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        binding.button.setOnClickListener(view -> {
+        checkPermissions();
 
+        binding.button.setOnClickListener(view -> {
+            createRecyclerView(getPhoneContacts());
         });
     }
 
-    private void getPhoneContacts() {
+    private void checkPermissions(){
         if (ContextCompat.checkSelfPermission(
                 this,
                 Manifest.permission.READ_CONTACTS
@@ -39,6 +46,17 @@ public class MainActivity extends AppCompatActivity {
                     0
             );
         }
+    }
+
+    private void createRecyclerView(List<Contact> contactList){
+        RecyclerViewAdapter recyclerViewAdapter = new RecyclerViewAdapter(contactList);
+        RecyclerView recyclerView = new RecyclerView(this);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(recyclerViewAdapter);
+        binding.linearLayout.addView(recyclerView);
+    }
+
+    private List<Contact> getPhoneContacts() {
         ContentResolver contentResolver = getContentResolver();
         Uri uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
         Cursor cursor = contentResolver.query(
@@ -49,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
                 null
         );
 
+        List<Contact> contactList = new ArrayList<>();
         int count = cursor.getCount();
         Log.i("CONTACT_PROVIDER_DEMO", "TOTAL # of Contacts: " + count);
         if (cursor.getCount() > 0) {
@@ -67,7 +86,12 @@ public class MainActivity extends AppCompatActivity {
                         ) : "empty";
 
                 Log.i("CONTACT_PROVIDER_DEMO", "Contact Name: " + contactName + ", Phone: " + contactNumber);
+                contactList.add(new Contact(
+                        contactName,
+                        contactNumber
+                ));
             }
         }
+        return contactList;
     }
 }
